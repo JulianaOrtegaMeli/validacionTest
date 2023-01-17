@@ -1,13 +1,12 @@
 package com.mercadolibre.validator.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mercadolibre.validator.dto.*;
 import com.mercadolibre.validator.dto.api.RequestColaider;
 import java.io.IOException;
-import java.util.Arrays;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import java.util.*;
+
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,12 +14,12 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class TestValidation {
 
-  public void invokeApiCall() {
+  public static String invokeApiCall(String myJsonString) {
     RestTemplate restTemplate = new RestTemplate();
-
+    String result = "";
     ObjectMapper om = new ObjectMapper();
 
-    String myJsonString =
+    /*String myJsonString =
         "{\n"
             + "    \"id\": \"MLA933769272\",\n"
             + "    \"site_id\": \"MLA\",\n"
@@ -72,7 +71,7 @@ public class TestValidation {
             + "        }\n"
             + "    ]\n"
             + "}";
-
+        */
     try {
       RequestColaider root = om.readValue(myJsonString.getBytes(), RequestColaider.class);
 
@@ -86,9 +85,17 @@ public class TestValidation {
         HttpEntity<Object> requestEntity = new HttpEntity<>(root, headers);
          String url="https://internal-api.mercadolibre.com/validation-hub/items/normalize?department=structured-data&validation=fashion-size-consistency&env=core-test&forwarded_client_id=2860837171021627";
          Object response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
-
+      ResponseEntity r = (ResponseEntity) response;
+      Map<String, ArrayList <LinkedHashMap<String, String>>> map = (Map) r.getBody();
+     ArrayList <LinkedHashMap<String, String>> array = map.get("causes");
+     LinkedHashMap<String, String> link = array.get(0);
+     String mess = link.get("message");
+      String[] parts = mess.split(",");
+      String[] p = parts[1].split("\\)");
+       result = p[0];
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    return result;
   }
 }

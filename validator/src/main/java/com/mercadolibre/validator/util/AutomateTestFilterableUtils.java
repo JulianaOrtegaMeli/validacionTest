@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+
+import com.mercadolibre.validator.service.*;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -123,8 +125,7 @@ public class AutomateTestFilterableUtils {
     InputExcelDTO excelDTO = createExcelDTO(pageActual, rowPosition);
     InputJsonDTO jsonDTO = excelDTOtoJsonDTO(excelDTO, site, domain);
     generateJson(jsonDTO);
-    getFilterableSize(jsonDTO);
-    String resultHttp = "";
+    String resultHttp = getFilterableSize(generateJson(jsonDTO));
     setContentExcel(hssfWorkbookOut, excelDTO, rowPosition, resultHttp);
   }
 
@@ -140,13 +141,14 @@ public class AutomateTestFilterableUtils {
 
   /**
    * Método para obtener la respuesta del consumo http del collider.
-   * @param jsonDTO Es el dto que contiene la información del json a enviar
+   * @param jsonString Es el dto que contiene la información del json a enviar
    * @return String valor del filterableSize
    */
-  public String getFilterableSize(InputJsonDTO jsonDTO) {
+  public String getFilterableSize(String jsonString) {
+
     //OutputJsonDTO resultDto = restClient.searchFilterableSize(jsonDTO);
     //return resultDto.getCauses().get(0).getMessage();
-    return "";
+    return TestValidation.invokeApiCall(jsonString);
   }
 
   /**
