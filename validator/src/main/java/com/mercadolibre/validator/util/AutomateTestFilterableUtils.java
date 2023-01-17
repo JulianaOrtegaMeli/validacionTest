@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component("RegexUtils")
-@Profile({"local"})
+//@Profile({"local"})
 public class AutomateTestFilterableUtils {
 
   static final String BASE_URL = "http://localhost:8080/validation-hub/items/normalize";
