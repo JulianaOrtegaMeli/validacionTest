@@ -1,17 +1,13 @@
-package com.mercadolibre.fashion.validator.plugin.util;
+package com.mercadolibre.validator.util;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.mercadolibre.fashion.validator.plugin.beans.rest.fashion.ColliderRestClient;
 import com.mercadolibre.validator.dto.InputExcelDTO;
 import com.mercadolibre.validator.dto.InputJsonDTO;
-import com.mercadolibre.validator.dto.OutputJsonDTO;
-import com.mercadolibre.routing.RoutingHelper;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -58,16 +54,7 @@ public class AutomateTestFilterableUtils {
 
   FileOutputStream outputStream;
 
-  ColliderRestClient restClient;
-
-  /**
-   * Constructor.
-   * @param restClient Es el cliente que consume el collider.
-   */
-  public AutomateTestFilterableUtils(ColliderRestClient restClient) {
-    this.restClient = restClient;
-    //new ColliderRestClient(new ObjectMapper(), BASE_URL, HTTP_DEFAULT_VALUE, HTTP_DEFAULT_VALUE, "");
-    //RoutingHelper.createAndSetNewMeliContext();
+  public AutomateTestFilterableUtils() {
 
   }
 
@@ -118,7 +105,7 @@ public class AutomateTestFilterableUtils {
     XSSFRow row;
     for (int rowPosition = 0; rowPosition <= pageActual.getLastRowNum(); rowPosition++) {
       //page actual
-      if (rowPosition == Constants.CERO) {
+      if (rowPosition == 0) {
         continue;
       }
       row = pageActual.getRow(rowPosition);
@@ -157,8 +144,9 @@ public class AutomateTestFilterableUtils {
    * @return String valor del filterableSize
    */
   public String getFilterableSize(InputJsonDTO jsonDTO) {
-    OutputJsonDTO resultDto = restClient.searchFilterableSize(jsonDTO);
-    return resultDto.getCauses().get(0).getMessage();
+    //OutputJsonDTO resultDto = restClient.searchFilterableSize(jsonDTO);
+    //return resultDto.getCauses().get(0).getMessage();
+    return "";
   }
 
   /**
@@ -173,7 +161,7 @@ public class AutomateTestFilterableUtils {
   }
 
   private void setWidthHeaders(XSSFSheet sheet) {
-    for (int positionColumn = Constants.CERO; positionColumn <= Constants.SEIS; positionColumn++) {
+    for (int positionColumn = 0; positionColumn <= 6; positionColumn++) {
       sheet.setColumnWidth(positionColumn, WIDTH_COLUMN);
     }
   }
@@ -181,7 +169,7 @@ public class AutomateTestFilterableUtils {
   private XSSFCellStyle createStyleHeader(XSSFSheet sheet) {
     XSSFCellStyle style = sheet.getWorkbook().createCellStyle();
     XSSFFont font = sheet.getWorkbook().createFont();
-    font.setFontHeight(Constants.SEIS + Constants.SEIS);
+    font.setFontHeight(12);
     font.setBold(true);
     style.setFont(font);
     return style;
@@ -198,25 +186,25 @@ public class AutomateTestFilterableUtils {
     XSSFSheet sheet = ((XSSFWorkbook) hssfWorkbookOut).getSheetAt(0);
     XSSFRow row = sheet.createRow(rowNum);
 
-    XSSFCell cellGenderName = row.createCell(Constants.CERO, CellType.STRING);
+    XSSFCell cellGenderName = row.createCell(0, CellType.STRING);
     cellGenderName.setCellValue(calculateValueNameGender(excelDTO.getGender()));
 
-    XSSFCell cellGender = row.createCell(Constants.UNO, CellType.STRING);
+    XSSFCell cellGender = row.createCell(1, CellType.STRING);
     cellGender.setCellValue(excelDTO.getGender());
 
-    XSSFCell cellAgeGroup = row.createCell(Constants.DOS, CellType.STRING);
+    XSSFCell cellAgeGroup = row.createCell(2, CellType.STRING);
     cellAgeGroup.setCellValue(excelDTO.getAgeGroup());
 
-    XSSFCell cellSize = row.createCell(Constants.TRES, CellType.STRING);
+    XSSFCell cellSize = row.createCell(3, CellType.STRING);
     cellSize.setCellValue(excelDTO.getSize());
 
-    XSSFCell cellExpected = row.createCell(Constants.CUATRO, CellType.STRING);
+    XSSFCell cellExpected = row.createCell(4, CellType.STRING);
     cellExpected.setCellValue(excelDTO.getExpectedFilterableSize());
 
-    XSSFCell cellActual = row.createCell(Constants.CINCO, CellType.STRING);
+    XSSFCell cellActual = row.createCell(5, CellType.STRING);
     cellActual.setCellValue(resultHttp);
 
-    XSSFCell cellMatch = row.createCell(Constants.SEIS, CellType.STRING);
+    XSSFCell cellMatch = row.createCell(6, CellType.STRING);
     cellMatch.setCellValue(calculateMatch(excelDTO.getExpectedFilterableSize(), resultHttp));
 
   }
@@ -257,11 +245,11 @@ public class AutomateTestFilterableUtils {
    */
   private void createHeadersExcel(XSSFSheet sheet, XSSFCellStyle style) {
 
-    XSSFRow firstRow = sheet.createRow(Constants.CERO);
+    XSSFRow firstRow = sheet.createRow(0);
 
-    for (int positionCell = Constants.UNO; positionCell <= Constants.SEIS; positionCell++) {
+    for (int positionCell = 1; positionCell <= 6; positionCell++) {
       XSSFCell cell = firstRow.createCell(positionCell, CellType.STRING);
-      firstRow.getCell(positionCell).setCellValue(HEADERS_EXCEL.get(positionCell - Constants.UNO));
+      firstRow.getCell(positionCell).setCellValue(HEADERS_EXCEL.get(positionCell - 1));
       firstRow.getCell(positionCell).setCellStyle(style);
     }
 
@@ -274,10 +262,10 @@ public class AutomateTestFilterableUtils {
    * @return InputExcelDTO
    */
   private InputExcelDTO createExcelDTO(XSSFSheet pageActual, int rowNum) {
-    String gender = pageActual.getRow(rowNum).getCell(Constants.UNO).getStringCellValue();
-    String ageGroup = pageActual.getRow(rowNum).getCell(Constants.DOS).getStringCellValue();
-    String size = pageActual.getRow(rowNum).getCell(Constants.TRES).getStringCellValue();
-    String expected = pageActual.getRow(rowNum).getCell(Constants.CUATRO).getStringCellValue();
+    String gender = pageActual.getRow(rowNum).getCell(1).getStringCellValue();
+    String ageGroup = pageActual.getRow(rowNum).getCell(2).getStringCellValue();
+    String size = pageActual.getRow(rowNum).getCell(3).getStringCellValue();
+    String expected = pageActual.getRow(rowNum).getCell(4).getStringCellValue();
     InputExcelDTO dto = new InputExcelDTO();
     dto.setGender(gender);
     dto.setAgeGroup(ageGroup);
@@ -333,17 +321,17 @@ public class AutomateTestFilterableUtils {
    */
   private String calculateValueNameGender(String idGender) {
     String gender = "";
-    if (ID_GENDER.get(Constants.CERO).equalsIgnoreCase(idGender)) {
+    if (ID_GENDER.get(0).equalsIgnoreCase(idGender)) {
       gender = "Mujer";
-    } else if (ID_GENDER.get(Constants.UNO).equalsIgnoreCase(idGender)) {
+    } else if (ID_GENDER.get(1).equalsIgnoreCase(idGender)) {
       gender = "Hombre";
-    } else if (ID_GENDER.get(Constants.DOS).equalsIgnoreCase(idGender)) {
+    } else if (ID_GENDER.get(2).equalsIgnoreCase(idGender)) {
       gender = "Niños";
-    } else if (ID_GENDER.get(Constants.TRES).equalsIgnoreCase(idGender)) {
+    } else if (ID_GENDER.get(3).equalsIgnoreCase(idGender)) {
       gender = "Niñas";
-    } else if (ID_GENDER.get(Constants.CUATRO).equalsIgnoreCase(idGender)) {
+    } else if (ID_GENDER.get(4).equalsIgnoreCase(idGender)) {
       gender = "Sin genero";
-    } else if (ID_GENDER.get(Constants.CINCO).equalsIgnoreCase(idGender)) {
+    } else if (ID_GENDER.get(5).equalsIgnoreCase(idGender)) {
       gender = "Bebes";
     }
     return gender;
@@ -359,7 +347,7 @@ public class AutomateTestFilterableUtils {
     JSONObject domainJson = null;
     try {
       File file = new File("./configs/ConsolidadoIdCategory.json");
-      Object siteObject = new JSONParser().parse(Files.newBufferedReader(Paths.get(file.getPath()), Charset.forName(Constants.UTF8)));
+      Object siteObject = new JSONParser().parse(Files.newBufferedReader(Paths.get(file.getPath()), Charset.forName("UTF-8")));
       siteJson = (JSONObject) siteObject;
       Object domainObject = siteJson.get(site);
       domainJson = (JSONObject) domainObject;

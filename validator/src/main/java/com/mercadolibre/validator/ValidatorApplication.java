@@ -1,7 +1,9 @@
 package com.mercadolibre.validator;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.mercadolibre.validator.util.AutomateTestFilterableUtils;
 
 @SpringBootApplication
 public class ValidatorApplication {
@@ -22,16 +24,15 @@ public class ValidatorApplication {
 	String output_path;
 
 	public static void main(String[] args) {
-		ScopeUtils.calculateScopeSuffix();
-		SpringApplication.run(AutomateTestFilterable.class, args);
+		//ScopeUtils.calculateScopeSuffix();
+		SpringApplication.run(ValidatorApplication.class, args);
 	}
 
-	@Override
 	public void run(String... args) throws Exception {
 
-		ColliderRestClient restClient = new ColliderRestClient(new ObjectMapper(), "http://localhost:8080/validation-hub/items/normalize", 3000, 3000, "");
-		RoutingHelper.createAndSetNewMeliContext();
-		AutomateTestFilterableUtils automate = new AutomateTestFilterableUtils(restClient);
+		//ColliderRestClient restClient = new ColliderRestClient(new ObjectMapper(), "http://localhost:8080/validation-hub/items/normalize", 3000, 3000, "");
+		//RoutingHelper.createAndSetNewMeliContext();
+		AutomateTestFilterableUtils automate = new AutomateTestFilterableUtils();
 		automate.automateTest(domain, site, file_path, output_path);
 	}
 

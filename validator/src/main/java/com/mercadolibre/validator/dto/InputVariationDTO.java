@@ -1,4 +1,4 @@
-package com.mercadolibre.fashion.validator.plugin.dto;
+package com.mercadolibre.validator.dto;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
