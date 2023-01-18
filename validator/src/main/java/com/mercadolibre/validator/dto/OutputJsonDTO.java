@@ -12,10 +12,10 @@ public class OutputJsonDTO {
 
   public List<String> callbacks;
 
-  public List<CauseDTO> causes;
+  public List <LinkedHashMap<String, String>> causes;
 
   public OutputJsonDTO() {
     this.callbacks = new ArrayList<String>();
-    this.causes = new ArrayList<CauseDTO>();
+    this.causes = new ArrayList <LinkedHashMap<String, String>>();
   }
 }

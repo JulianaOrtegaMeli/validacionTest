@@ -24,14 +24,10 @@ public class ValidatorApplication implements CommandLineRunner {
 	String output_path = "/Users/julortega/Documents/Casos de prueba/";
 
 	public static void main(String[] args) {
-		//ScopeUtils.calculateScopeSuffix();
 		SpringApplication.run(ValidatorApplication.class, args);
 	}
 
 	public void run(String... args) throws Exception {
-
-		//ColliderRestClient restClient = new ColliderRestClient(new ObjectMapper(), "http://localhost:8080/validation-hub/items/normalize", 3000, 3000, "");
-		//RoutingHelper.createAndSetNewMeliContext();
 		AutomateTestFilterableUtils automate = new AutomateTestFilterableUtils();
 		automate.automateTest(domain, site, file_path, output_path);
 	}

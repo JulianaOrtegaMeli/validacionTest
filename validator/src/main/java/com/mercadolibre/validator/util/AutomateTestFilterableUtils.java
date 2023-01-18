@@ -5,9 +5,7 @@ import com.google.gson.Gson;
 import com.mercadolibre.validator.dto.InputExcelDTO;
 import com.mercadolibre.validator.dto.InputJsonDTO;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,16 +31,12 @@ import org.springframework.stereotype.Component;
 //@Profile({"local"})
 public class AutomateTestFilterableUtils {
 
-  static final String BASE_URL = "http://localhost:8080/validation-hub/items/normalize";
-
   static final List<String> ID_AGE_GROUP = Arrays.asList("6725189", "1065183");
 
   static final List<String> ID_GENDER = Arrays.asList("339665", "339666", "339667", "339668", "110461", "371795");
 
   static final List<String> HEADERS_EXCEL = Arrays.asList("GENDER", "AGE GROUP", "SIZE",
       "EXPECTED FILTRABLE_SIZE", "ACTUAL FILTRABLE_SIZE", "COINCIDE");
-
-  static final int HTTP_DEFAULT_VALUE = 3000;
 
   static final String NO_EXISTE = "No existe";
 
@@ -98,7 +92,8 @@ public class AutomateTestFilterableUtils {
       }
 
     } catch (Exception e) {
-      logger.error("Ocurrio un error al procesar el archivo xlsx");
+      logger.error("Ocurrio un error al procesar el archivo xlsx" +  e.getCause());
+      e.printStackTrace();
     }
   }
 
@@ -145,10 +140,13 @@ public class AutomateTestFilterableUtils {
    * @return String valor del filterableSize
    */
   public String getFilterableSize(String jsonString) {
-
-    //OutputJsonDTO resultDto = restClient.searchFilterableSize(jsonDTO);
-    //return resultDto.getCauses().get(0).getMessage();
-    return TestValidation.invokeApiCall(jsonString);
+    String filterableSize = "";
+    try {
+      filterableSize = TestValidation.buildRequest(jsonString);
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+    }
+    return filterableSize;
   }
 
   /**
