@@ -35,7 +35,7 @@ public class AutomateTestFilterableUtils {
 
   static final List<String> ID_GENDER = Arrays.asList("339665", "339666", "339667", "339668", "110461", "371795");
 
-  static final List<String> HEADERS_EXCEL = Arrays.asList("GENDER", "AGE GROUP", "SIZE",
+  static final List<String> HEADERS_EXCEL = Arrays.asList("GENDER NAME", "GENDER", "AGE GROUP", "SIZE",
       "EXPECTED FILTRABLE_SIZE", "ACTUAL FILTRABLE_SIZE", "COINCIDE");
 
   static final String NO_EXISTE = "No existe";
@@ -73,6 +73,7 @@ public class AutomateTestFilterableUtils {
       writeExcelResult(hssfWorkbookOut, pathOutput);
     } catch (Exception e) {
       logger.error("Ocurrio un error al crear el nuevo archivo xlsx resultante");
+      e.printStackTrace();
     }
 
   }
@@ -111,6 +112,7 @@ public class AutomateTestFilterableUtils {
       }
       String siteSheet = pageActual.getSheetName();
       if (siteSheet.equalsIgnoreCase(site)) {
+        System.out.println(rowPosition);
         processData(site, domain, rowPosition, pageActual, hssfWorkbookOut);
       }
     }
@@ -131,6 +133,7 @@ public class AutomateTestFilterableUtils {
       ((XSSFWorkbook) hssfWorkbookOut).close();
     } catch (Exception e) {
       logger.error("Ocurrio un error al escribir el archivo xlsx");
+      e.printStackTrace();
     }
   }
 
@@ -247,9 +250,9 @@ public class AutomateTestFilterableUtils {
 
     XSSFRow firstRow = sheet.createRow(0);
 
-    for (int positionCell = 1; positionCell <= 6; positionCell++) {
+    for (int positionCell = 0; positionCell <= 6; positionCell++) {
       XSSFCell cell = firstRow.createCell(positionCell, CellType.STRING);
-      firstRow.getCell(positionCell).setCellValue(HEADERS_EXCEL.get(positionCell - 1));
+      firstRow.getCell(positionCell).setCellValue(HEADERS_EXCEL.get(positionCell));
       firstRow.getCell(positionCell).setCellStyle(style);
     }
 

@@ -18,8 +18,7 @@ public class TestValidation {
     public static RestTemplate restTemplate;
 
     public static ObjectMapper objectMapper;
-    public static String url="https://internal-api.mercadolibre.com/validation-hub/items/normalize?department=structured-data&validation=fashion-size-consistency&env=core-test&forwarded_client_id=2860837171021627";
-
+    public static String url= "https://internal-api.mercadolibre.com/validation-hub/items/normalize?department=structured-data&validation=fashion-size-consistency&env=core-test&forwarded_client_id=2860837171021627";
 
     public static String buildRequest(String myJsonString) throws IOException {
         String result = "";
@@ -52,55 +51,6 @@ public class TestValidation {
       return getFilterableSize(r);
     }
 
-   /* public static String invokeApiCall2(String myJsonString) {
-      String result = "";
-      restTemplate = new RestTemplate();
-      objectMapper = new ObjectMapper();
-
-    try {
-      RequestColaider root = objectMapper.readValue(myJsonString.getBytes(), RequestColaider.class);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Client-Id", "2579503448603610");
-        headers.add("X-Auth-Token", "ad6824d50e1a23d5f12debc5829759a9bed608726f52784e6bdd8847beca14c9");
-
-        HttpEntity<Object> requestEntity = new HttpEntity<>(root, headers);
-         //String url="https://internal-api.mercadolibre.com/validation-hub/items/normalize?department=structured-data&validation=fashion-size-consistency&env=core-test&forwarded_client_id=2860837171021627";
-        ResponseEntity r = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
-        result = getFilterableSize(r);
-    } catch (Exception e) {
-        result = e.getMessage().toString();
-        if (!result.isEmpty()) {
-            result = reInvokeApiCall(myJsonString);
-        }
-    }
-    return result;
-  }
-
-  private static String reInvokeApiCall(String myJsonString) {
-    String result = "";
-    restTemplate = new RestTemplate();
-    objectMapper = new ObjectMapper();
-
-      try {
-          RequestColaider root = objectMapper.readValue(myJsonString.getBytes(), RequestColaider.class);
-          HttpHeaders headers = new HttpHeaders();
-          headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-          headers.setContentType(MediaType.APPLICATION_JSON);
-          headers.add("X-Client-Id", "2579503448603610");
-          headers.add("X-Auth-Token", "ad6824d50e1a23d5f12debc5829759a9bed608726f52784e6bdd8847beca14c9");
-
-          HttpEntity<Object> requestEntity = new HttpEntity<>(root, headers);
-          //String url="https://internal-api.mercadolibre.com/validation-hub/items/normalize?department=structured-data&validation=fashion-size-consistency&env=core-test&forwarded_client_id=2860837171021627";
-          ResponseEntity r = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
-          result = getFilterableSize(r);
-      } catch (Exception e) {
-          result = e.getMessage().toString();
-      }
-      return result;
-  }*/
-
   private static String getFilterableSize (ResponseEntity response){
       String result = "";
       Map<String, ArrayList <LinkedHashMap<String, String>>> body = (Map) response.getBody();
@@ -108,10 +58,30 @@ public class TestValidation {
       output.setCauses(body.get("causes"));
       if (!output.getCauses().isEmpty()) {
           String mess = output.getCauses().get(0).get("message");
-          String[] parts = mess.split(",");
-          String[] p = parts[1].split("\\)");
-          result = p[0];
+          String[] parts = mess.split("\\(");
+           result = getMultiValue(parts).toString();
       }
       return result;
+  }
+
+  private static StringBuilder getMultiValue (String [] parts) {
+      String result = "";
+      StringBuilder multivalue = new StringBuilder();
+      String[] seccion, aux;
+      for (int part = 1; part < parts.length; part++) {
+          seccion = parts[part].split("\\)");
+          aux = seccion[0].split(",");
+          if (aux.length >= 2) {
+              result = aux[1];
+              if (aux.length > 2) {
+                  result = aux[1] + "," + aux[2];
+              }
+          }
+          if (part != parts.length - 1) {
+              result += "|";
+          }
+          multivalue.append(result);
+      }
+      return multivalue;
   }
 }
